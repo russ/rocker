@@ -1,3 +1,6 @@
+// Using this MIDI library
+// http://timothytwillman.com/itp_blog/?page_id=240
+
 #include "Midi.h"
 
 #define STATUS1 7
