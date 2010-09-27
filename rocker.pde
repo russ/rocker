@@ -1,10 +1,8 @@
 #include "Midi.h"
+#include "LEDPixels.h"
 
-#define STATUS1 7
-#define STATUS2 6
-#define STATUS3 5
-#define STATUS4 4
-#define STATUS5 3
+LEDPixels LP;
+int display[119];
 
 class Rocker : public Midi {
   public:
@@ -34,27 +32,24 @@ class Rocker : public Midi {
 Rocker midi(Serial);
 
 void setup() {
-  pinMode(STATUS1, OUTPUT);
-  pinMode(STATUS2, OUTPUT);
-  pinMode(STATUS3, OUTPUT);
-  pinMode(STATUS4, OUTPUT);
-  pinMode(STATUS5, OUTPUT);
-  
-  for (int i = 0; i < 10; i++) {
-    digitalWrite(STATUS1, HIGH);
-    digitalWrite(STATUS2, HIGH);
-    digitalWrite(STATUS3, HIGH);
-    digitalWrite(STATUS4, HIGH);
-    digitalWrite(STATUS5, HIGH);
-    delay(30);
-    digitalWrite(STATUS1, LOW);
-    digitalWrite(STATUS2, LOW);
-    digitalWrite(STATUS3, LOW);
-    digitalWrite(STATUS4, LOW);
-    digitalWrite(STATUS5, LOW);
+  // Number of leds, address of display, clock (green), data (yellow)
+  LP.initialize(129, &display[0], 60, 12, 11);
+  LP.setRange(0, 119, LP.color(0, 0, 0));
+  LP.show();
+
+  // Fade lights on startup
+  for (int i = 0; i < 32; i++) {
+    LP.setRange(0, 119, LP.color(i, i, i));
+    LP.show();
     delay(30);
   }
-  
+
+  for (int i = 32; i >= 0; i--) {
+    LP.setRange(0, 119, LP.color(i, i, i));
+    LP.show();
+    delay(30);
+  }
+
   midi.begin(0);
 }
 
@@ -62,9 +57,11 @@ void loop() {
   midi.poll();
 }
 
-void blink(int pin, int level) {
-  analogWrite(pin, level);
+void blink(int pillar, int level) {
+  LP.setRange(0, 20, LP.color(32, 32, 32));
+  LP.show();
   delay(30);
-  analogWrite(pin, 0);
+  LP.setRange(0, 20, LP.color(0, 0, 0));
+  LP.show();
   delay(30);
 }
