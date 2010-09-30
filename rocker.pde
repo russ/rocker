@@ -15,6 +15,12 @@ class Rocker : public Midi {
   Rocker(HardwareSerial &s) : Midi(s) {}
 
   void handleNoteOn(unsigned int channel, unsigned int note, unsigned int velocity) {    
+    int level = velocity * 2;
+    
+    if (level < 50) {
+      level = 50;
+    }
+    
     if (note == 42 || note == 44 || note == 46) {
       // High Hat
       blink(STATUS1, velocity * 2);
